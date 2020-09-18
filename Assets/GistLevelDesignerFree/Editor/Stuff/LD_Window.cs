@@ -547,7 +547,9 @@ namespace GistLevelDesignerFree {
         }
         private        void   CheckSO() {
             if (SO != null) return;
-            var SO_path = RootDir() + Prefs.levelDesignerName + ".asset";
+            var rootDir = RootDir();
+            if (string.IsNullOrEmpty(rootDir)) return;
+            var SO_path = rootDir + Prefs.levelDesignerName + ".asset";
             SO = AssetDatabase.LoadAssetAtPath<LevelDesigner_SO>(SO_path);
             if (SO == null) {
                 AssetDatabase.CreateAsset(ScriptableObject.CreateInstance(typeof(LevelDesigner_SO)), SO_path);
@@ -753,6 +755,7 @@ namespace GistLevelDesignerFree {
             return true;
         }
         private bool SelectionIsManaged() {
+            if (SO == null) return false;
             GameObjectIdentity selectionIdentity = Utility.GetGameObjectIdentity(selection, out bool _, out bool _);
             if (selectionIdentity.identity == Identity.UNDEFINED) return false;
 
