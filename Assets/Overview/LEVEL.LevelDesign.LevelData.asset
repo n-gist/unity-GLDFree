@@ -1,0 +1,211 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 670ad16e6abf4aa4b9b9c6bb5ea81170, type: 3}
+  m_Name: LEVEL.LevelDesign.LevelData
+  m_EditorClassIdentifier: 
+  levelData:
+    prefabGUID: 4ba7ec64562ff39499fa4edbcdf2c7a9
+    mainSet: {fileID: 11400000, guid: abeb9f9bfddda7c40a8d4a7e6f42d047, type: 2}
+    objectsSet: {fileID: 11400000, guid: d93ea425bd40b2d4597080d6d8960a01, type: 2}
+    optionsSettings:
+      moveSnap: 1
+      rotationSnap: 22.5
+      wallsManipulatorsHeight: 1
+    visibilitySettings:
+      movement: 1
+      rotation: 1
+      walls: 1
+      wallsMovement: 1
+      wallsRotation: 1
+      wings: 1
+      wingsGrowth: 1
+      wingsLines: 1
+      objects: 1
+      floors: 1
+      hidden: 0
+    wallsData:
+    - simpleObjectData:
+        fileID: 1200908341840105985
+      type: 1
+      wingsData:
+      - growDirection: {x: 1, y: 0, z: 0}
+        chainFileIDs: 
+        capFileID: 1353158835120786464
+      - growDirection: {x: 0, y: 0, z: -1}
+        chainFileIDs: 85d1cb6f55babb56dcf84dbccf2d507c36e0fc46c6eeed09a373f3005c85f656914ef40ff1ca3313312544b5a4e21d3282c45e142e1bf877
+        capFileID: 7947232485871265598
+    - simpleObjectData:
+        fileID: 5897301358717224657
+      type: 1
+      wingsData:
+      - growDirection: {x: 1, y: 0, z: 0}
+        chainFileIDs: 
+        capFileID: 5584840037421201637
+      - growDirection: {x: 0, y: 0, z: -1}
+        chainFileIDs: 57743f3738d7c349be5cec8a3a86745f91664f6c660a545c3165b7a53b293359927977979e0e3162bc4478e7d3b23f75425493bf6a17506bcba8b84b278828352e23d236c27f3722c0b000271d28b930
+        capFileID: 5974984322760025174
+    - simpleObjectData:
+        fileID: 4303375469929308
+      type: 2
+      wingsData:
+      - growDirection: {x: 1, y: 0, z: 0}
+        chainFileIDs: 
+        capFileID: 7512577767406306121
+      - growDirection: {x: 0, y: 0, z: -1}
+        chainFileIDs: 
+        capFileID: 5175737795168638955
+      - growDirection: {x: -1, y: 0, z: 0}
+        chainFileIDs: e2f769b7b612e7651ae5ae8b276232153668e871f9e1f9318ae814989356ac4274dd059d58b6973a5eb28cbe7c9e0b5a60d924afcc5f092f
+        capFileID: 5187459051726582682
+    - simpleObjectData:
+        fileID: 7328848926449165972
+      type: 1
+      wingsData:
+      - growDirection: {x: 1, y: 0, z: 0}
+        chainFileIDs: 
+        capFileID: 735909286580867024
+      - growDirection: {x: 0, y: 0, z: -1}
+        chainFileIDs: 72929466785f701286a945fe4a7f68671f7c93820532a10a
+        capFileID: 6338673119607893339
+    - simpleObjectData:
+        fileID: 6219446332020995134
+      type: 2
+      wingsData:
+      - growDirection: {x: 1, y: 0, z: 0}
+        chainFileIDs: 8c27b8d15a8c0c7df94e2dcbe493ba61e599b04c8685cc07
+        capFileID: 3627049381000391829
+      - growDirection: {x: 0, y: 0, z: -1}
+        chainFileIDs: 818abd90356b3d48ae3c8e727b6dd93f068b6095c685736f
+        capFileID: 4601971496269087916
+      - growDirection: {x: -1, y: 0, z: 0}
+        chainFileIDs: 35442037b6ebc4496b484d1b51749175
+        capFileID: 572720906841622940
+    - simpleObjectData:
+        fileID: 7030971353167794240
+      type: 1
+      wingsData:
+      - growDirection: {x: 1, y: 0, z: 0}
+        chainFileIDs: c96cdcbb7da5f218
+        capFileID: 2288955429120662538
+      - growDirection: {x: 0, y: 0, z: -1}
+        chainFileIDs: 
+        capFileID: 2458140533110410802
+    - simpleObjectData:
+        fileID: 6685485809223828574
+      type: 2
+      wingsData:
+      - growDirection: {x: 1, y: 0, z: 0}
+        chainFileIDs: 918740e7b618e4512924cea61e13515af17371fdd3214409c2579f4796d9b13a56ddc808ba13b82531f3b8aae8ab6826e906a5f4bca3d24c
+        capFileID: 6096564532271909352
+      - growDirection: {x: 0, y: 0, z: -1}
+        chainFileIDs: 2ace8106ef42ed00758e133ab0320369
+        capFileID: 7439843161078554189
+      - growDirection: {x: -1, y: 0, z: 0}
+        chainFileIDs: 
+        capFileID: 530608678687139337
+    - simpleObjectData:
+        fileID: 2002249838744186280
+      type: 2
+      wingsData:
+      - growDirection: {x: 1, y: 0, z: 0}
+        chainFileIDs: d8f8df29d002cf1f
+        capFileID: 3430909515322595384
+      - growDirection: {x: 0, y: 0, z: -1}
+        chainFileIDs: cd7b8bc77f56a178698f3732895ff16a
+        capFileID: 3770306265842265809
+      - growDirection: {x: -1, y: 0, z: 0}
+        chainFileIDs: 
+        capFileID: 8176855899469306634
+    - simpleObjectData:
+        fileID: 2345993364106806321
+      type: 1
+      wingsData:
+      - growDirection: {x: 1, y: 0, z: 0}
+        chainFileIDs: 2fc9e4540c96f853829411474b30be2b7c83eb7f7129bd5d
+        capFileID: 534596323252817160
+      - growDirection: {x: 0, y: 0, z: -1}
+        chainFileIDs: 5c19e2e2eec71522b09189573f407b63
+        capFileID: 4214302329824084491
+    - simpleObjectData:
+        fileID: 2980880126011485245
+      type: 1
+      wingsData:
+      - growDirection: {x: 1, y: 0, z: 0}
+        chainFileIDs: d6c4a33eea6fcc74
+        capFileID: 8136717648392215795
+      - growDirection: {x: 0, y: 0, z: -1}
+        chainFileIDs: 4342abfe4afc6168
+        capFileID: 5792482101383778869
+    - simpleObjectData:
+        fileID: 735316966441410594
+      type: 2
+      wingsData:
+      - growDirection: {x: 1, y: 0, z: 0}
+        chainFileIDs: 066f3ae5baadba15
+        capFileID: 6973109466874264226
+      - growDirection: {x: 0, y: 0, z: -1}
+        chainFileIDs: 
+        capFileID: 2252642362444197559
+      - growDirection: {x: -1, y: 0, z: 0}
+        chainFileIDs: 2a8b45d6595ed93b
+        capFileID: 2377088838249163166
+    simpleObjectsData:
+    - fileID: 7832374103666062245
+    - fileID: 3972738661794649736
+    - fileID: 9057990534060748875
+    - fileID: 58745099024201004
+    - fileID: 8091317771721114495
+    - fileID: 6450178065379183349
+    - fileID: 6242426628631292306
+    - fileID: 845474196184589439
+    - fileID: 3023885715204420147
+    - fileID: 3209353221673174351
+    - fileID: 7175588687266797011
+    - fileID: 5624169189937256778
+    - fileID: 7854250243944383974
+    - fileID: 2737647271347427340
+    - fileID: 5026710270452915444
+    - fileID: 8411236066990840817
+    - fileID: 2155533328568507893
+    floorsData:
+    - simpleObjectData:
+        fileID: 1319637639667600281
+      prefabGUID: c5a6408687f4a6642b89fd6ea8b7b302
+      size: 2
+      tilesFileIDsWidth: 4
+      startingRow: 1
+      startingCol: 3
+      tilesFileIDs: 8b42f7680ebf170b035c48761b19545b4b87b7a453c0a86c3cec925ac75b6a726575ad053ac5f754758c5959a580a85d5cc02d3ab372787441ca9b6f8674ab17
+    - simpleObjectData:
+        fileID: 3029112185040969660
+      prefabGUID: 4cf599942c7e83e4bbc35b67a488e70a
+      size: 2
+      tilesFileIDsWidth: 4
+      startingRow: 0
+      startingCol: 3
+      tilesFileIDs: 837752cf3188566eab08182188364c509fc36fbafd731527794c22a033ca8d726aa29627287532502b6fd819e865797670f4c6f90ca3e01eee5422d0b9c59a2d
+    - simpleObjectData:
+        fileID: 1585928599838544174
+      prefabGUID: 2a4ce19af6db7aa4db129244dda70e5c
+      size: 4
+      tilesFileIDsWidth: 3
+      startingRow: 0
+      startingCol: 1
+      tilesFileIDs: 24f5ef3ce960b42c7f62a3f4bd86b67853c73d668a73604fc062e934874c767307b50a9b2322cf70e54e22867232314b
+    - simpleObjectData:
+        fileID: 5159242148292431409
+      prefabGUID: 4cf599942c7e83e4bbc35b67a488e70a
+      size: 2
+      tilesFileIDsWidth: 1
+      startingRow: 0
+      startingCol: 0
+      tilesFileIDs: b40304081fab1555
