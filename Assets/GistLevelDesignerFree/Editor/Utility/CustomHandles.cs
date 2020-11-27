@@ -15,7 +15,7 @@ namespace GistLevelDesignerFree {
         private static float    hotAngle;
         private static float    angleOffset;
         private static bool     altPressed;
-        private static float    handleMaxSizeK;
+        private static float    handleMaxSizeK = 1f / HandlesStyles.handleMaxSizeBasis;
         
         public  static void     SetHotPosition(Vector3 position) {
             hotPosition = position;

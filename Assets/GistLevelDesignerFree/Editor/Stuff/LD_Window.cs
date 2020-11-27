@@ -133,7 +133,7 @@ namespace GistLevelDesignerFree {
         #region GUI 
         private void OnGUI() {
             if (Application.isPlaying) return;
-            if (selectionStatus == SelectionStatus.SUITABLE) {CreateGUI(); return;}
+            if (selectionStatus == SelectionStatus.SUITABLE) {CreatePickupGUI(); return;}
             if (selectionStatus != SelectionStatus.MANAGED) return;
             
             const int heightScrollFix = 21;
@@ -269,7 +269,7 @@ namespace GistLevelDesignerFree {
             guiCalcHeight += Styles.foldHeight;
             return foldValue;
         }
-        private void CreateGUI() {
+        private void CreatePickupGUI() {
             GUILayout.BeginVertical();
             GUILayout.FlexibleSpace();
             GUILayout.BeginHorizontal();
