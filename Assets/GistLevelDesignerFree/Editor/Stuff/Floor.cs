@@ -27,8 +27,7 @@ namespace GistLevelDesignerFree {
             startingRow = 0;
             startingCol = 0;
             if (floorEntry.floorPrefab != null) {
-                var tileOriginal = PrefabUtility.GetCorrespondingObjectFromOriginalSource(floorEntry.floorPrefab);
-                if (AssetDatabase.TryGetGUIDAndLocalFileIdentifier(tileOriginal, out string guid, out long _)) {
+                if (AssetDatabase.TryGetGUIDAndLocalFileIdentifier(floorEntry.floorPrefab, out string guid, out long _)) {
                     prefabGUID = guid;
                     var firstTile = (GameObject)PrefabUtility.InstantiatePrefab(floorEntry.floorPrefab, gameObject.transform);
                     firstTile.name = floorEntry.floorPrefab.name;
