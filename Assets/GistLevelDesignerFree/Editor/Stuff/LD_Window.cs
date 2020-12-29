@@ -9,12 +9,12 @@ using System.IO;
 #endregion
 namespace GistLevelDesignerFree {
     public class LD_Window : EditorWindow {
-        #region SETTINGS 
+    #region SETTINGS 
         static bool undoCreatedObjectsOn = false;
         const  int  buttonsSizeMax       = 100;
         const  int  buttonsPerRowMin     = 4;
-        #endregion
-        #region FIELDS 
+    #endregion
+    #region FIELDS 
         private static LD_Window window;
         private enum   SelectionStatus {NONE, SUITABLE, MANAGED}
         private bool                 locked;
@@ -46,8 +46,8 @@ namespace GistLevelDesignerFree {
         private List<Wall>         walls;
         private List<SimpleObject> simpleObjects;
         private List<Floor>        floors;
-        #endregion
-        #region WINDOW 
+    #endregion
+    #region WINDOW 
         [MenuItem(Prefs.levelDesignerMenuPath)]
         public  static void OpenWindow() {
             window = (LD_Window)EditorWindow.GetWindow(typeof(LD_Window));
@@ -129,8 +129,8 @@ namespace GistLevelDesignerFree {
                 }
             }
         }
-        #endregion
-        #region GUI 
+    #endregion
+    #region GUI 
         private void OnGUI() {
             if (Application.isPlaying) return;
             if (selectionStatus == SelectionStatus.SUITABLE) {CreatePickupGUI(); return;}
@@ -290,8 +290,8 @@ namespace GistLevelDesignerFree {
             SortObjects();
             for (int i = 0; i < sortedObjects.Length; i++) sortedObjects[i].SceneGUI();
         }
-        #endregion
-        #region OBJECTS ADD/REMOVE 
+    #endregion
+    #region OBJECTS ADD/REMOVE 
         private        void AddWall(WallType wallType) {
             if (!Operating() || Event.current.button != 0) return;
             GameObject wallPrefab = null;
@@ -390,8 +390,8 @@ namespace GistLevelDesignerFree {
                 PrefabUtility.UnloadPrefabContents(rootGO);
             }
         }
-        #endregion
-        #region WORK    INIT/SAVE 
+    #endregion
+    #region WORK    INIT/SAVE 
         private        void   InitializeManaged() {
             // SceneObject.SampleCameraPosition();
             objects = new List<SceneObject>(root.transform.childCount);
@@ -466,16 +466,24 @@ namespace GistLevelDesignerFree {
                     list3.ForEach(item => {if (IsOneOfManagedGameObjects(item.containingInstanceGameObject)) removedComponentsOverrides.Add(item);});
                     list4.ForEach(item => {
                         System.Type type = item.instanceObject.GetType();
+                        GameObject overridenObject = null;
+                        
                         if (type == typeof(Transform)) {
-                            if (IsOneOfManagedGameObjects(((Transform)item.instanceObject).gameObject)) objectOverrides.Add(item);
+                            overridenObject = ((Transform)item.instanceObject).gameObject;
                         } else if (type == typeof(GameObject)) {
-                            if (IsOneOfManagedGameObjects((GameObject)item.instanceObject)) objectOverrides.Add(item);
+                            overridenObject = (GameObject)item.instanceObject;
+                        } else if (type == typeof(MeshRenderer)) {
+                            overridenObject = ((MeshRenderer)item.instanceObject).gameObject;
+                        } else if (type == typeof(MeshFilter)) {
+                            overridenObject = ((MeshFilter)item.instanceObject).gameObject;
+                        } else if (type.IsSubclassOf(typeof(Behaviour)) || type == typeof(Behaviour)) {
+                            overridenObject = ((Behaviour)item.instanceObject).gameObject;
+                        }
+                        
+                        if (overridenObject != null) {
+                            if (IsOneOfManagedGameObjects(overridenObject)) objectOverrides.Add(item);
                         } else {
-                            if (type.IsSubclassOf(typeof(Behaviour)) || type == typeof(Behaviour)) {
-                                if (IsOneOfManagedGameObjects(((Behaviour)item.instanceObject).gameObject)) objectOverrides.Add(item);
-                            } else {
-                                Debug.LogWarning("LevelDesigner: override of type " + type.ToString() + " was not handled");
-                            }
+                            Debug.LogWarning("LevelDesigner: override of type " + type.ToString() + " was not handled");
                         }
                     });
                     
@@ -575,8 +583,8 @@ namespace GistLevelDesignerFree {
             }
             return rootDir.ToString();
         }
-        #endregion
-        #region OTHER 
+    #endregion
+    #region OTHER 
         public static Main_Set_SO        GetActiveMainSet() {
             return window?.levelData?.mainSet;
         }
@@ -913,6 +921,6 @@ namespace GistLevelDesignerFree {
                 locked = lockStatus;
             }
         }
-        #endregion
+    #endregion
     }
 }

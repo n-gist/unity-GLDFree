@@ -72,7 +72,7 @@ namespace GistLevelDesignerFree {
             return null;
         }
         
-        public static float     GetWallLength() {
+        public static     float GetWallLength() {
             var mainSet = LD_Window.GetActiveMainSet();
             if (mainSet != null) {
                 return mainSet.wallLength <= 0 ? 1f : mainSet.wallLength;
@@ -81,10 +81,10 @@ namespace GistLevelDesignerFree {
         public static new float GetMoveSnap() {
             return GetWallLength();
         }
-        public override float MoveSnapValue() {
+        public override   float MoveSnapValue() {
             return GetWallLength();
         }
-        public override float RotationSnapValue() {
+        public override   float RotationSnapValue() {
             return 22.5f;
         }
         
