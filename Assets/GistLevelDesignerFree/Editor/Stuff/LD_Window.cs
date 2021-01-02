@@ -6,6 +6,7 @@ using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
 using System.Collections.Generic;
 using System.IO;
+using System;
 #endregion
 namespace GistLevelDesignerFree {
     public class LD_Window : EditorWindow {
@@ -23,6 +24,10 @@ namespace GistLevelDesignerFree {
         private Vector2              scrollPos;
         private Vector3              prevCameraPosition;
         private UnityEngine.Object[] loadingAssetsPreviews;
+        private bool                 nullPreviewsRepaint;
+        private int                  nullPreviewsAttempts;
+        private DateTime             nullPreviewsLastAttemptTime;
+        private DateTime             nullIconsPreviewsLastAttemptTime;
         private GUIContent[]         wallsGUIcontents;
         private GUIContent[]         objectsGUIcontents;
         private ObjectsSetEntry[]    actualObjectsEntries;
@@ -63,7 +68,6 @@ namespace GistLevelDesignerFree {
         private void        OnEnable() {
             window = this;
             Flush();
-            LoadIcons();
             CheckSO();
             OnSelectionChange();
             SceneView.duringSceneGui += OnSceneGUI;
@@ -72,10 +76,12 @@ namespace GistLevelDesignerFree {
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             EditorApplication.wantsToQuit += OnEditorWantsToQuit;
             EditorApplication.update += EditorUpdate;
+            EditorApplication.update += IconsLoader;
             if (undoCreatedObjectsOn) Undo.undoRedoPerformed += UndoRedoPerformed;
         }
         private void        OnDisable() {
             if (undoCreatedObjectsOn) Undo.undoRedoPerformed -= UndoRedoPerformed;
+            EditorApplication.update -= IconsLoader;
             EditorApplication.update -= EditorUpdate;
             EditorApplication.wantsToQuit -= OnEditorWantsToQuit;
             EditorSceneManager.sceneSaving -= OnBeforeSceneSave;
@@ -83,7 +89,6 @@ namespace GistLevelDesignerFree {
             SceneView.duringSceneGui -= OnSceneGUI;
             Save();
             Flush();
-            // window = null;
         }
         private void        OnInspectorUpdate() {
             if (selection != null) {
@@ -113,6 +118,7 @@ namespace GistLevelDesignerFree {
             Repaint();
         }
         private void        Update() {
+            if (nullPreviewsRepaint) NullPreviewRepaint();
             if (deferredSave) Save();
             if (loadingAssetsPreviews.Length > 0) CheckLoadingPreviews();
         }
@@ -120,6 +126,17 @@ namespace GistLevelDesignerFree {
             if (this.hasFocus != lastHasFocus) {
                 lastHasFocus = this.hasFocus;
                 SceneView.RepaintAll();
+            }
+        }
+        private void        IconsLoader() {
+            var currentTime = DateTime.UtcNow;
+            var nullIconsPreviewRepaintPause = currentTime - nullIconsPreviewsLastAttemptTime;
+            if (nullIconsPreviewRepaintPause.TotalSeconds > 1) {
+                if (LoadIcons()) {
+                    EditorApplication.update -= IconsLoader;
+                    Repaint();
+                }
+                nullIconsPreviewsLastAttemptTime = currentTime;
             }
         }
         void OnFocus() {
@@ -208,7 +225,7 @@ namespace GistLevelDesignerFree {
         }
         private bool GUIpreviewButtonsGrid(GUIContent[] GUIContents, out int clicked) {
             clicked = -1;
-            if (GUIContents.Length == 0) return false;
+            if (GUIContents == null || GUIContents.Length == 0) return false;
             int buttonsNum = GUIContents.Length;
             var buttonStyle = Styles.objectPreviewButton;
             int screenWidth = Screen.width;
@@ -261,14 +278,35 @@ namespace GistLevelDesignerFree {
                 for (int i = 0; i < assetPickArray.Length; i++) {
                     pickCallback(ref assetPickArray[i], out var prefab, out var name);
                     if (prefab != null) {
-                        GUIcontentsList.Add(new GUIContent(AssetPreview.GetAssetPreview(prefab), name));
+                        var preview = AssetPreview.GetAssetPreview(prefab);
+                        if (preview == null) {
+                            nullPreviewsRepaint = true;
+                            break;
+                        }
+                        GUIcontentsList.Add(new GUIContent(preview, name));
                         actualAssetList.Add(assetPickArray[i]);
                         if (AssetPreview.IsLoadingAssetPreview(prefab.GetInstanceID())) loading.Add(prefab);
                     }
                 }
-                GUIcontents = GUIcontentsList.ToArray();
-                actualAssetArray = actualAssetList.ToArray();
-                ArrayUtility.AddRange(ref loadingAssetsPreviews, loading.ToArray());
+                if (!nullPreviewsRepaint) {
+                    GUIcontents = GUIcontentsList.ToArray();
+                    actualAssetArray = actualAssetList.ToArray();
+                    ArrayUtility.AddRange(ref loadingAssetsPreviews, loading.ToArray());
+                }
+            }
+        }
+        private void NullPreviewRepaint() {
+            if (nullPreviewsAttempts > 100) {
+                nullPreviewsRepaint = false;
+            } else {
+                var currentTime = DateTime.UtcNow;
+                var nullPreviewRepaintPause = currentTime - nullPreviewsLastAttemptTime;
+                if (nullPreviewRepaintPause.TotalMilliseconds > 200) {
+                    nullPreviewsRepaint = false;
+                    nullPreviewsAttempts++;
+                    nullPreviewsLastAttemptTime = currentTime;
+                    Repaint();
+                }
             }
         }
         private bool Foldout(ref Prefs.Foldouts.Foldout foldout) {
@@ -535,6 +573,10 @@ namespace GistLevelDesignerFree {
         private        void   Flush() {
             locked = false;
             loadingAssetsPreviews = new UnityEngine.Object[0];
+            nullPreviewsRepaint = false;
+            nullPreviewsAttempts = 0;
+            nullPreviewsLastAttemptTime = DateTime.UtcNow;
+            nullIconsPreviewsLastAttemptTime = DateTime.UtcNow;
             objectsGUIcontents = null;
             floorsGUIcontents = null;
             
@@ -620,29 +662,35 @@ namespace GistLevelDesignerFree {
             if (repaint) {
                 objectsGUIcontents = null;
                 floorsGUIcontents = null;
-                LoadIcons();
                 Repaint();
             }
         }
-        private void LoadIcons() {
+        private bool LoadIcons() {
+            if (wallsGUIcontents != null) return true;
+            
             string iconsDir = RootDir() + "Icons" + System.IO.Path.DirectorySeparatorChar;
             var loadingIcons = new List<UnityEngine.Object>();
             
             Texture2D icon_Wall_I = AssetDatabase.LoadAssetAtPath<Texture2D>(iconsDir + "wall_I.png");
-            Prefs.Icons.wall_I = AssetPreview.GetAssetPreview(icon_Wall_I);
-            if (AssetPreview.IsLoadingAssetPreview(icon_Wall_I.GetInstanceID())) loadingIcons.Add(icon_Wall_I);
+            var preview_wall_I = AssetPreview.GetAssetPreview(icon_Wall_I);
+            if (preview_wall_I == null || AssetPreview.IsLoadingAssetPreview(icon_Wall_I.GetInstanceID())) return false;
             
             Texture2D icon_Wall_L = AssetDatabase.LoadAssetAtPath<Texture2D>(iconsDir + "wall_L.png");
-            Prefs.Icons.wall_L = AssetPreview.GetAssetPreview(icon_Wall_L);
-            if (AssetPreview.IsLoadingAssetPreview(icon_Wall_L.GetInstanceID())) loadingIcons.Add(icon_Wall_L);
+            var preview_wall_L = AssetPreview.GetAssetPreview(icon_Wall_L);
+            if (preview_wall_L == null || AssetPreview.IsLoadingAssetPreview(icon_Wall_L.GetInstanceID())) return false;
             
             Texture2D icon_Wall_T = AssetDatabase.LoadAssetAtPath<Texture2D>(iconsDir + "wall_T.png");
-            Prefs.Icons.wall_T = AssetPreview.GetAssetPreview(icon_Wall_T);
-            if (AssetPreview.IsLoadingAssetPreview(icon_Wall_T.GetInstanceID())) loadingIcons.Add(icon_Wall_T);
+            var preview_wall_T = AssetPreview.GetAssetPreview(icon_Wall_T);
+            if (preview_wall_T == null || AssetPreview.IsLoadingAssetPreview(icon_Wall_T.GetInstanceID())) return false;
             
             Texture2D icon_Wall_X = AssetDatabase.LoadAssetAtPath<Texture2D>(iconsDir + "wall_X.png");
-            Prefs.Icons.wall_X = AssetPreview.GetAssetPreview(icon_Wall_X);
-            if (AssetPreview.IsLoadingAssetPreview(icon_Wall_X.GetInstanceID())) loadingIcons.Add(icon_Wall_X);
+            var preview_wall_X = AssetPreview.GetAssetPreview(icon_Wall_X);
+            if (preview_wall_X == null || AssetPreview.IsLoadingAssetPreview(icon_Wall_X.GetInstanceID())) return false;
+            
+            Prefs.Icons.wall_I = preview_wall_I;
+            Prefs.Icons.wall_L = preview_wall_L;
+            Prefs.Icons.wall_T = preview_wall_T;
+            Prefs.Icons.wall_X = preview_wall_X;
             
             wallsGUIcontents = new GUIContent[]{
                 new GUIContent(Prefs.Icons.wall_I),
@@ -651,7 +699,7 @@ namespace GistLevelDesignerFree {
                 new GUIContent(Prefs.Icons.wall_X)
             };
             
-            ArrayUtility.AddRange(ref loadingAssetsPreviews, loadingIcons.ToArray());
+            return true;
         }
         private void OnBeforeSceneSave(Scene scene, string scenePath) {
             Save();
@@ -691,6 +739,8 @@ namespace GistLevelDesignerFree {
                 CheckSO();
                 selectionStatus = SelectionStatus.SUITABLE;
                 if (SelectionIsManaged()) {
+                    nullPreviewsLastAttemptTime = DateTime.UtcNow;
+                    nullPreviewsAttempts = 0;
                     selectionStatus = SelectionStatus.MANAGED;
                 }
             }
