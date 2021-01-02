@@ -40,6 +40,7 @@ namespace GistLevelDesignerFree {
         private LevelData_SO_Editor levelData_SO_Editor;
         private LevelData           levelData;
         private bool                levelDataNotActual;
+        private bool                lastHasFocus;
         
         private List<SceneObject>  objects;
         private SceneObject[]      sortedObjects;
@@ -70,10 +71,12 @@ namespace GistLevelDesignerFree {
             EditorSceneManager.sceneSaving += OnBeforeSceneSave;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             EditorApplication.wantsToQuit += OnEditorWantsToQuit;
+            EditorApplication.update += EditorUpdate;
             if (undoCreatedObjectsOn) Undo.undoRedoPerformed += UndoRedoPerformed;
         }
         private void        OnDisable() {
             if (undoCreatedObjectsOn) Undo.undoRedoPerformed -= UndoRedoPerformed;
+            EditorApplication.update -= EditorUpdate;
             EditorApplication.wantsToQuit -= OnEditorWantsToQuit;
             EditorSceneManager.sceneSaving -= OnBeforeSceneSave;
             EditorSceneManager.sceneClosing -= OnBeforeSceneClose;
@@ -112,6 +115,12 @@ namespace GistLevelDesignerFree {
         private void        Update() {
             if (deferredSave) Save();
             if (loadingAssetsPreviews.Length > 0) CheckLoadingPreviews();
+        }
+        private void        EditorUpdate() {
+            if (this.hasFocus != lastHasFocus) {
+                lastHasFocus = this.hasFocus;
+                SceneView.RepaintAll();
+            }
         }
         void OnFocus() {
             OnSelectionChange();
@@ -281,7 +290,7 @@ namespace GistLevelDesignerFree {
             GUILayout.EndVertical();
         }
         private void OnSceneGUI(SceneView sceneView) {
-            if (root == null || Application.isPlaying) return;
+            if (!this.hasFocus || root == null || Application.isPlaying) return;
             SceneObject.SampleCameraPosition();
             SceneObject.SetRootTransform(root.transform);
             
