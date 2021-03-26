@@ -101,4 +101,12 @@ namespace GistLevelDesignerFree {
             return false;
         }
    }
+   
+   [CustomEditor(typeof(LevelDesigner_SO))]
+   public class LevelDesigner_SO_Editor : Editor {
+       public override void OnInspectorGUI() {
+           EditorGUILayout.LabelField(Prefs.levelDesignerPackageFullName + " " + Prefs.version);
+           base.OnInspectorGUI();
+       }
+   }
 }

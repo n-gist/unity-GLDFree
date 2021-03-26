@@ -3,10 +3,13 @@ using UnityEditor;
 
 namespace GistLevelDesignerFree {
     public struct Prefs {
+        public const string version = "1.2";
         public const string levelDesignObjectName = "LevelDesign";
         public const string levelDesignerName = "LevelDesignerFree";
         public const string levelDesignerWindowTitle = "Level Designer";
-        public const string levelDesignerMenuPath = "Window/Twice Better/" + levelDesignerWindowTitle + " Free";
+        public const string levelDesignerPackageName = "Gist Level Designer";
+        public const string levelDesignerPackageFullName = levelDesignerPackageName + " Free";
+        public const string levelDesignerMenuPath = "Window/Twice Better/" + levelDesignerPackageFullName;
         public static class Foldouts {
             public struct Foldout {
                 public string name;
