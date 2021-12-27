@@ -536,13 +536,11 @@ namespace GistLevelDesignerFree {
                     
                     string rootPrefabPath = AssetDatabase.GUIDToAssetPath(rootPrefab_GUID);
                     List<PrefabOverride>[] overrides = new List<PrefabOverride>[]{
-                        // addedGameObjectsOverrides, // 2020.2.2f1 crash fix
+                        addedGameObjectsOverrides,
                         addedComponentsOverrides,
                         removedComponentsOverrides,
                         objectOverrides
                     };
-                    for (int i = 0; i < addedGameObjectsOverrides.Count; i++) addedGameObjectsOverrides[i].Apply(rootPrefabPath); // 2020.2.2f1 crash fix
-                    overridesCount += addedGameObjectsOverrides.Count; // 2020.2.2f1 crash fix
                     
                     for (int i = 0; i < overrides.Length; i++) {
                         if (overrides[i].Count > 0) {
