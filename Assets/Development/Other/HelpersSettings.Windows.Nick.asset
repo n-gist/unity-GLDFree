@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b14daf223925e83498604b8d0c53a080, type: 3}
+  m_Name: HelpersSettings.Windows.Nick
+  m_EditorClassIdentifier: 
+  enabled: 1
+  refresher:
+    mode: 3
+    delay: 40
+  registerYamlMerge: 0
+  hotkeys:
+    enabled: 1
+    deselect:
+      key: 27
+      shift: 0
+      alt: 0
+      ctrl: 0
+    frame:
+      key: 288
+      shift: 0
+      alt: 1
+      ctrl: 1
+    cycleTools:
+      key: 288
+      shift: 0
+      alt: 0
+      ctrl: 1
+    noTool:
+      key: 289
+      shift: 0
+      alt: 0
+      ctrl: 1

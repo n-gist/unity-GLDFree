@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.twicebetter.helpers": {
+      "version": "https://github.com/n-gist/unity-twicebetter-helpers.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.modules.imgui": "1.0.0"
+      },
+      "hash": "7a7507d6e78682d13ce87462f74ba0873811c63b"
+    },
     "com.unity.collab-proxy": {
       "version": "1.13.5",
       "depth": 0,
@@ -36,7 +45,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.vscode": {
-      "version": "1.2.4",
+      "version": "1.2.5",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
