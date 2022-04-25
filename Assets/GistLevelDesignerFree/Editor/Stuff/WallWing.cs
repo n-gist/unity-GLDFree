@@ -106,6 +106,8 @@ namespace GistLevelDesignerFree {
             }
         }
         public  void     UpdateWallLinePositions() {
+            if (wall == null || wall.gameObject == null) return;
+            
             Vector3 wallPosition = wall.gameObject.transform.position;
             Matrix4x4 wallLocalToWorld = wall.gameObject.transform.localToWorldMatrix;
             wallLineStart = wallPosition + wallLocalToWorld.MultiplyVector(manipulatorPositionShift);
