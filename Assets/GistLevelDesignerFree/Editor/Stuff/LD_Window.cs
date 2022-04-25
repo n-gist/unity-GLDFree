@@ -536,6 +536,7 @@ namespace GistLevelDesignerFree {
                         }
                     });
                     
+                    #if !UNITY_2020_2
                     string rootPrefabPath = AssetDatabase.GUIDToAssetPath(rootPrefab_GUID);
                     List<PrefabOverride>[] overrides = new List<PrefabOverride>[]{
                         addedGameObjectsOverrides,
@@ -543,6 +544,16 @@ namespace GistLevelDesignerFree {
                         removedComponentsOverrides,
                         objectOverrides
                     };
+                    #else
+                    string rootPrefabPath = AssetDatabase.GUIDToAssetPath(rootPrefab_GUID);
+                    List<PrefabOverride>[] overrides = new List<PrefabOverride>[]{
+                        addedComponentsOverrides,
+                        removedComponentsOverrides,
+                        objectOverrides
+                    };
+                    for (int i = 0; i < addedGameObjectsOverrides.Count; i++) addedGameObjectsOverrides[i].Apply(rootPrefabPath);
+                    overridesCount += addedGameObjectsOverrides.Count;
+                    #endif
                     
                     for (int i = 0; i < overrides.Length; i++) {
                         if (overrides[i].Count > 0) {
