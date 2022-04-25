@@ -7,7 +7,6 @@ namespace GistLevelDesignerFree {
         private static readonly int handlesHint = (Prefs.levelDesignObjectName + ".LD_Handles").GetHashCode();
         private static readonly int colorMaterialCullPropertyID = Shader.PropertyToID("_Cull");
         private static Material colorMaterial;
-        private static Vector2  mouseCurrent;
         private static Vector2  mouseStart;
         private static Vector3  hotPosition;
         private static Vector3  worldStart;
@@ -61,15 +60,13 @@ namespace GistLevelDesignerFree {
                     break;
                 case EventType.MouseDrag:
                     if (GUIUtility.hotControl == controlID) {
-                        mouseCurrent += new Vector2(Event.current.delta.x, -Event.current.delta.y);
-                        // Vector3 draggedScreenPosition = Camera.current.WorldToScreenPoint(Handles.matrix.MultiplyPoint(worldStart)) + (Vector3)(mouseCurrent - mouseStart);
-                        // Vector3 draggedWorldPosition = Handles.matrix.inverse.MultiplyPoint(Camera.current.ScreenToWorldPoint(draggedScreenPosition));
-                        Vector3 draggedScreenPosition = Camera.current.WorldToScreenPoint(worldStart) + (Vector3)(mouseCurrent - mouseStart);
-                        Vector3 draggedWorldPosition = Camera.current.ScreenToWorldPoint(draggedScreenPosition);
+                        var draggedScreenPosition = HandleUtility.WorldToGUIPointWithDepth(worldStart) + (Vector3)(Event.current.mousePosition - mouseStart);
+                        var draggedWorldPosition = HandleUtility.GUIPointToWorldRay(draggedScreenPosition).GetPoint(draggedScreenPosition.z);
                         
-                        if (Camera.current.transform.forward == Vector3.forward || Camera.current.transform.forward == -Vector3.forward) draggedWorldPosition.z = generalHandleDesc.position.z;
-                        if (Camera.current.transform.forward == Vector3.up || Camera.current.transform.forward == -Vector3.up) draggedWorldPosition.y = generalHandleDesc.position.y;
-                        if (Camera.current.transform.forward == Vector3.right || Camera.current.transform.forward == -Vector3.right) draggedWorldPosition.x = generalHandleDesc.position.x;
+                        var camForward = SceneView.lastActiveSceneView.camera.transform.forward;
+                        if (camForward == Vector3.forward || camForward == -Vector3.forward) draggedWorldPosition.z = generalHandleDesc.position.z;
+                        if (camForward == Vector3.up || camForward == -Vector3.up) draggedWorldPosition.y = generalHandleDesc.position.y;
+                        if (camForward == Vector3.right || camForward == -Vector3.right) draggedWorldPosition.x = generalHandleDesc.position.x;
                         generalHandleDesc.position = draggedWorldPosition;
                         movedAfterFirstPress = true;
                         
@@ -83,7 +80,7 @@ namespace GistLevelDesignerFree {
                     if (!altPressed && HandleUtility.nearestControl == controlID) {
                         if (Event.current.button == 0) {
                             GUIUtility.hotControl = controlID;
-                            mouseCurrent = mouseStart = Event.current.mousePosition;
+                            mouseStart = Event.current.mousePosition;
                             worldStart = generalHandleDesc.position;
                             movedAfterFirstPress = false;
                             SetHotPosition(worldStart);
@@ -149,21 +146,19 @@ namespace GistLevelDesignerFree {
                         break;
                     }
                     
-                    Camera sceneCamera = Camera.current;
                     Vector3[] verts = handleDesc.vertices;
                     int[] order = handleDesc.verticesOrder;
                     Vector2 mousePos = Event.current.mousePosition;
-                    mousePos.y = sceneCamera.pixelHeight - mousePos.y;
                     float distance = float.PositiveInfinity;
                     int vertI;
                     if (handleDesc.renderType == VerticesMeshHandleDesc.RenderType.QUADS) {
                         vertI = 0;
                         vertsRotation = handleDesc.verticesRotation;
                         while (vertI < order.Length) {
-                            Vector2 quad0 = sceneCamera.WorldToScreenPoint(TRS.MultiplyPoint3x4(handlePosition + vertsRotation * (handleSize * verts[order[vertI]])));
-                            Vector2 quad1 = sceneCamera.WorldToScreenPoint(TRS.MultiplyPoint3x4(handlePosition + vertsRotation * (handleSize * verts[order[vertI + 1]])));
-                            Vector2 quad2 = sceneCamera.WorldToScreenPoint(TRS.MultiplyPoint3x4(handlePosition + vertsRotation * (handleSize * verts[order[vertI + 2]])));
-                            Vector2 quad3 = sceneCamera.WorldToScreenPoint(TRS.MultiplyPoint3x4(handlePosition + vertsRotation * (handleSize * verts[order[vertI + 3]])));
+                            Vector2 quad0 = HandleUtility.WorldToGUIPoint(TRS.MultiplyPoint3x4(handlePosition + vertsRotation * (handleSize * verts[order[vertI]])));
+                            Vector2 quad1 = HandleUtility.WorldToGUIPoint(TRS.MultiplyPoint3x4(handlePosition + vertsRotation * (handleSize * verts[order[vertI + 1]])));
+                            Vector2 quad2 = HandleUtility.WorldToGUIPoint(TRS.MultiplyPoint3x4(handlePosition + vertsRotation * (handleSize * verts[order[vertI + 2]])));
+                            Vector2 quad3 = HandleUtility.WorldToGUIPoint(TRS.MultiplyPoint3x4(handlePosition + vertsRotation * (handleSize * verts[order[vertI + 3]])));
                             
                             if (   IsPointInTriangle(mousePos, quad0, quad1, quad2)
                                 || IsPointInTriangle(mousePos, quad2, quad3, quad0)) {
@@ -183,9 +178,9 @@ namespace GistLevelDesignerFree {
                         vertI = 0;
                         vertsRotation = handleDesc.verticesRotation;
                         while (vertI < order.Length) {
-                            Vector2 tri0 = sceneCamera.WorldToScreenPoint(TRS.MultiplyPoint3x4(handlePosition + vertsRotation * (handleSize * verts[order[vertI]])));
-                            Vector2 tri1 = sceneCamera.WorldToScreenPoint(TRS.MultiplyPoint3x4(handlePosition + vertsRotation * (handleSize * verts[order[vertI + 1]])));
-                            Vector2 tri2 = sceneCamera.WorldToScreenPoint(TRS.MultiplyPoint3x4(handlePosition + vertsRotation * (handleSize * verts[order[vertI + 2]])));
+                            Vector2 tri0 = HandleUtility.WorldToGUIPoint(TRS.MultiplyPoint3x4(handlePosition + vertsRotation * (handleSize * verts[order[vertI]])));
+                            Vector2 tri1 = HandleUtility.WorldToGUIPoint(TRS.MultiplyPoint3x4(handlePosition + vertsRotation * (handleSize * verts[order[vertI + 1]])));
+                            Vector2 tri2 = HandleUtility.WorldToGUIPoint(TRS.MultiplyPoint3x4(handlePosition + vertsRotation * (handleSize * verts[order[vertI + 2]])));
                             
                             if (IsPointInTriangle(mousePos, tri0, tri1, tri2)) {
                                 distance = 0;
@@ -343,7 +338,7 @@ namespace GistLevelDesignerFree {
                         discPlane = new Plane(handleDesc.normal, handleDesc.general.position);
                         if (discPlane.Raycast(mouseRay, out float distance)) {
                             GUIUtility.hotControl = controlID;
-                            mouseCurrent = mouseStart = mousePosition;
+                            mouseStart = mousePosition;
                             worldStart = mouseRay.GetPoint(distance);
                             hotAngle = 0;
                             angleOffset = 0;
