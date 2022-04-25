@@ -25,6 +25,9 @@ namespace GistLevelDesignerFree {
             return this.gameObject == gameObject;
         }
         public virtual void UpdateSceneGUIdrawingData() {}
+        public virtual bool CheckAndFixUnexpectedChangesAfterUndo() {
+            return false;
+        }
         
         public static  void    SetRootTransform(Transform rootTransform) {
             Matrix4x4 localToWorldCache = rootTransform.localToWorldMatrix;

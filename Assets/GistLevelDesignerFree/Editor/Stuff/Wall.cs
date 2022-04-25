@@ -137,6 +137,14 @@ namespace GistLevelDesignerFree {
         public override void UpdateSceneGUIdrawingData() {
             UpdateWallLinePositions();
         }
+        public override bool CheckAndFixUnexpectedChangesAfterUndo() {
+            var unexpectedChanges = false;
+            for (int i = 0; i < wings.Length; i++) {
+                if (wings[i].CheckAndFixUnexpectedChangesAfterUndo()) unexpectedChanges = true;
+            }
+            
+            return unexpectedChanges;
+        }
 
     }
     

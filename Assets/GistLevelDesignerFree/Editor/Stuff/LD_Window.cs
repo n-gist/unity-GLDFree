@@ -727,6 +727,7 @@ namespace GistLevelDesignerFree {
             }
             
             UpdateSceneGUIdrawingData();
+            if (CheckAndFixUnexpectedChangesAfterUndo()) deferredSave = true;
         }
         private void UpdateSceneGUIdrawingData() {
             if (sortedObjects != null) {
@@ -734,6 +735,16 @@ namespace GistLevelDesignerFree {
                     sortedObjects[i].UpdateSceneGUIdrawingData();
                 }
             }
+        }
+        private bool CheckAndFixUnexpectedChangesAfterUndo() {
+            var unexpectedChanges = false;
+            if (sortedObjects != null) {
+                for (int i = 0; i < sortedObjects.Length; i++) {
+                    if (sortedObjects[i].CheckAndFixUnexpectedChangesAfterUndo()) unexpectedChanges = true;
+                }
+            }
+            
+            return unexpectedChanges;
         }
         private void UpdateWallLinePositions() {
             if (walls == null) return;
@@ -760,10 +771,9 @@ namespace GistLevelDesignerFree {
             }
         }
         private void HierarchyGameObjectDeselected() {
-            Save();
+            deferredSave = true;
             selectionActive = false;
             selectionStatus = SelectionStatus.NONE;
-            // Repaint();
         }
         private void ShowButton(Rect position) {
             bool lockedNew = GUI.Toggle(position, locked, GUIContent.none, Styles.lockButton);

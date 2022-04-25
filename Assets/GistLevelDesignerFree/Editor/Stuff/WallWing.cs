@@ -73,8 +73,11 @@ namespace GistLevelDesignerFree {
         
         private void     UpdateCapPosition() {
             if (cap != null) {
-                cap.transform.localPosition = growDirection * Wall.GetWallLength() * (chain.Length);
+                cap.transform.localPosition = DesiredCapPosition();
             }
+        }
+        private Vector3  DesiredCapPosition() {
+            return growDirection * Wall.GetWallLength() * chain.Length;
         }
         public  WingData GatherData(string rootPrefabPath) {
             long[] chainFileIDs = new long[chain.Length];
@@ -224,7 +227,17 @@ namespace GistLevelDesignerFree {
             for (int i = 0; i < chain.Length; i++) if (chain[i] == gameObject) return true;
             return false;
         }
-        
+        public override bool CheckAndFixUnexpectedChangesAfterUndo() {
+            var unexpectedChanges = false;
+            if (cap != null) {
+                if (cap.transform.localPosition != DesiredCapPosition()) {
+                    UpdateCapPosition();
+                    unexpectedChanges = true;
+                }
+            }
+            
+            return unexpectedChanges;
+        }
         private static   void RemoveWingGameObject(GameObject wallGameObject, GameObject deletingChild) {
             if (deletingChild == null) return;
             if (PrefabUtility.IsAddedGameObjectOverride(deletingChild)) {
