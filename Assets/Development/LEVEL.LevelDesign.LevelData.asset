@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelData:
     prefabGUID: 4ba7ec64562ff39499fa4edbcdf2c7a9
-    mainSet: {fileID: 11400000, guid: abeb9f9bfddda7c40a8d4a7e6f42d047, type: 2}
-    objectsSet: {fileID: 11400000, guid: d93ea425bd40b2d4597080d6d8960a01, type: 2}
+    mainSet: {fileID: 11400000, guid: 5c68f49ae842d3c44841737380909fb8, type: 2}
+    objectsSet: {fileID: 11400000, guid: 338340c5f485df24cb45c8831b969b62, type: 2}
     optionsSettings:
       moveSnap: 1
       rotationSnap: 22.5
