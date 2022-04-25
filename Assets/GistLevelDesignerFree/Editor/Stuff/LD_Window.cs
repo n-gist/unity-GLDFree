@@ -163,9 +163,10 @@ namespace GistLevelDesignerFree {
             if (selectionStatus != SelectionStatus.MANAGED) return;
             
             const int heightScrollFix = 21;
-            if (Event.current.type == EventType.Layout) verticalScrollOn = guiCalcHeight > Screen.height - heightScrollFix;
+            int screenHeight = (int)(Screen.height / EditorGUIUtility.pixelsPerPoint);
+            if (Event.current.type == EventType.Layout) verticalScrollOn = guiCalcHeight > screenHeight - heightScrollFix;
             if (Event.current.type == EventType.Repaint) {
-                if (verticalScrollOn != guiCalcHeight > Screen.height - heightScrollFix) {
+                if (verticalScrollOn != guiCalcHeight > screenHeight - heightScrollFix) {
                     Repaint();
                     return;
                 }
@@ -173,8 +174,9 @@ namespace GistLevelDesignerFree {
             guiCalcHeight = 0;
             
             if (verticalScrollOn) {
+                int screenWidth = (int)(Screen.width / EditorGUIUtility.pixelsPerPoint);
                 scrollPos = GUILayout.BeginScrollView(
-                    scrollPos, false, true, GUILayout.Width(Screen.width), GUILayout.Height(Screen.height - heightScrollFix)
+                    scrollPos, false, true, GUILayout.Width(screenWidth), GUILayout.Height(screenHeight - heightScrollFix)
                 );
             } else if (scrollPos != Vector2.zero) scrollPos = Vector2.zero;
 
@@ -228,7 +230,7 @@ namespace GistLevelDesignerFree {
             if (GUIContents == null || GUIContents.Length == 0) return false;
             int buttonsNum = GUIContents.Length;
             var buttonStyle = Styles.objectPreviewButton;
-            int screenWidth = Screen.width;
+            int screenWidth = (int)(Screen.width / EditorGUIUtility.pixelsPerPoint);
             int areaWidth = verticalScrollOn ? screenWidth - (int)GUI.skin.verticalScrollbar.fixedWidth : screenWidth;
             int buttonMargin = buttonStyle.margin.right;
             int buttonsPerRow = (areaWidth - 4 + buttonMargin - 1) / (buttonsSizeMax + buttonMargin);
