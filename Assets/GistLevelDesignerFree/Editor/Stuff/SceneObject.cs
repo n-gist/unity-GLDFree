@@ -24,6 +24,7 @@ namespace GistLevelDesignerFree {
             if (gameObject == null) return false;
             return this.gameObject == gameObject;
         }
+        public virtual void UpdateSceneGUIdrawingData() {}
         
         public static  void    SetRootTransform(Transform rootTransform) {
             Matrix4x4 localToWorldCache = rootTransform.localToWorldMatrix;

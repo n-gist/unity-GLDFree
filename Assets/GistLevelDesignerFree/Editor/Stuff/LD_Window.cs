@@ -77,10 +77,10 @@ namespace GistLevelDesignerFree {
             EditorApplication.wantsToQuit += OnEditorWantsToQuit;
             EditorApplication.update += EditorUpdate;
             EditorApplication.update += IconsLoader;
-            if (undoCreatedObjectsOn) Undo.undoRedoPerformed += UndoRedoPerformed;
+            Undo.undoRedoPerformed += UndoRedoPerformed;
         }
         private void        OnDisable() {
-            if (undoCreatedObjectsOn) Undo.undoRedoPerformed -= UndoRedoPerformed;
+            Undo.undoRedoPerformed -= UndoRedoPerformed;
             EditorApplication.update -= IconsLoader;
             EditorApplication.update -= EditorUpdate;
             EditorApplication.wantsToQuit -= OnEditorWantsToQuit;
@@ -717,10 +717,21 @@ namespace GistLevelDesignerFree {
             if (stateChange == PlayModeStateChange.ExitingEditMode) Save();
         }
         private void UndoRedoPerformed() {
-            if (sortedObjects == null) return;
-            for (int i = 0; i < sortedObjects.Length; i++) {
-                if (sortedObjects[i].gameObject == null) {
-                    if (RemoveDisappearedObject(sortedObjects[i])) i--;
+            if (undoCreatedObjectsOn) {
+                if (sortedObjects == null) return;
+                for (int i = 0; i < sortedObjects.Length; i++) {
+                    if (sortedObjects[i].gameObject == null) {
+                        if (RemoveDisappearedObject(sortedObjects[i])) i--;
+                    }
+                }
+            }
+            
+            UpdateSceneGUIdrawingData();
+        }
+        private void UpdateSceneGUIdrawingData() {
+            if (sortedObjects != null) {
+                for (int i = 0; i < sortedObjects.Length; i++) {
+                    sortedObjects[i].UpdateSceneGUIdrawingData();
                 }
             }
         }

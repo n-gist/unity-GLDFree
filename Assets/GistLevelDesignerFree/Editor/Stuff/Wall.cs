@@ -134,6 +134,10 @@ namespace GistLevelDesignerFree {
             for (int i = 0; i < wings.Length; i++) if (wings[i].IsGameObjectManaged(gameObject)) return true;
             return false;
         }
+        public override void UpdateSceneGUIdrawingData() {
+            UpdateWallLinePositions();
+        }
+
     }
     
     [Serializable]
