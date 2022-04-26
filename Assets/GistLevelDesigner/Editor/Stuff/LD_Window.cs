@@ -41,6 +41,7 @@ namespace GistLevelDesigner {
         private bool                selectionActive;
         private SelectionStatus     selectionStatus;
         private bool                deferredSave;
+        private string              deferredSaveRootPrefabPath;
         private GameObject          root;
         private string              rootPrefab_GUID;
         private LevelData_SO        levelData_SO;
@@ -48,6 +49,7 @@ namespace GistLevelDesigner {
         private LevelData           levelData;
         private bool                levelDataNotActual;
         private bool                lastHasFocus;
+        private bool                undoRedoPerformedSubscribed;
         
         private List<SceneObject>  objects;
         private SceneObject[]      sortedObjects;
@@ -79,10 +81,8 @@ namespace GistLevelDesigner {
             EditorApplication.wantsToQuit += OnEditorWantsToQuit;
             EditorApplication.update += EditorUpdate;
             EditorApplication.update += IconsLoader;
-            Undo.undoRedoPerformed += UndoRedoPerformed;
         }
         private void        OnDisable() {
-            Undo.undoRedoPerformed -= UndoRedoPerformed;
             EditorApplication.update -= IconsLoader;
             EditorApplication.update -= EditorUpdate;
             EditorApplication.wantsToQuit -= OnEditorWantsToQuit;
@@ -224,8 +224,6 @@ namespace GistLevelDesigner {
             }
             
             if (verticalScrollOn) GUILayout.EndScrollView();
-            
-            // if (Event.current.type == EventType.Repaint) Debug.Log(GUILayoutUtility.GetLastRect().yMax + " " + guiCalcHeight);
         }
         private bool GUIpreviewButtonsGrid(GUIContent[] GUIContents, out int clicked) {
             clicked = -1;
@@ -488,14 +486,23 @@ namespace GistLevelDesigner {
             objectsGUIcontents = null;
             floorsGUIcontents = null;
         }
+        private        void   DeferredSave() {
+            if (selectionStatus != SelectionStatus.MANAGED) return;
+            
+            deferredSaveRootPrefabPath = AssetDatabase.GUIDToAssetPath(rootPrefab_GUID);
+            deferredSave = true;
+        }
+        private string SavingRootPrefabPath(bool deferred) {
+            return deferred ? deferredSaveRootPrefabPath : AssetDatabase.GUIDToAssetPath(rootPrefab_GUID);
+        }
         private        void   Save() {
             if (!Operating()) return;
+            
             if (selectionStatus == SelectionStatus.MANAGED || deferredSave || levelDataNotActual) {
                 if (EditorApplication.isUpdating) {
-                    deferredSave = true;
+                    DeferredSave();
                     return;
                 }
-                deferredSave = false;
                 
                 bool hasPrefabOverrides = PrefabUtility.HasPrefabInstanceAnyOverrides(root, false);
                 int overridesCount = 0;
@@ -538,8 +545,8 @@ namespace GistLevelDesigner {
                         }
                     });
                     
+                    string rootPrefabPath = SavingRootPrefabPath(deferredSave);
                     #if !UNITY_2020_2
-                    string rootPrefabPath = AssetDatabase.GUIDToAssetPath(rootPrefab_GUID);
                     List<PrefabOverride>[] overrides = new List<PrefabOverride>[]{
                         addedGameObjectsOverrides,
                         addedComponentsOverrides,
@@ -547,7 +554,6 @@ namespace GistLevelDesigner {
                         objectOverrides
                     };
                     #else
-                    string rootPrefabPath = AssetDatabase.GUIDToAssetPath(rootPrefab_GUID);
                     List<PrefabOverride>[] overrides = new List<PrefabOverride>[]{
                         addedComponentsOverrides,
                         removedComponentsOverrides,
@@ -568,7 +574,7 @@ namespace GistLevelDesigner {
                 }
                 
                 if (overridesCount > 0 || levelDataNotActual || levelData != levelData_SO.LevelData()) {
-                    string rootPrefabPath = AssetDatabase.GUIDToAssetPath(rootPrefab_GUID);
+                    string rootPrefabPath = SavingRootPrefabPath(deferredSave);
                     
                     var wallsData = new WallData[walls.Count];
                     for (int i = 0; i < wallsData.Length; i++) wallsData[i] = walls[i].GatherData(rootPrefabPath);
@@ -583,6 +589,11 @@ namespace GistLevelDesigner {
                     levelData.floorsData = floorsData;
 
                     if (levelData != levelData_SO.LevelData()) levelData_SO.UpdateData(levelData);
+                }
+                
+                if (deferredSave) {
+                    deferredSaveRootPrefabPath = null;
+                    deferredSave = false;
                 }
             }
         }
@@ -729,19 +740,6 @@ namespace GistLevelDesigner {
             if (stateChange == PlayModeStateChange.EnteredEditMode) OnSelectionChange();
             if (stateChange == PlayModeStateChange.ExitingEditMode) Save();
         }
-        private void UndoRedoPerformed() {
-            if (undoCreatedObjectsOn) {
-                if (sortedObjects == null) return;
-                for (int i = 0; i < sortedObjects.Length; i++) {
-                    if (sortedObjects[i].gameObject == null) {
-                        if (RemoveDisappearedObject(sortedObjects[i])) i--;
-                    }
-                }
-            }
-            
-            UpdateSceneGUIdrawingData();
-            if (CheckAndFixUnexpectedChangesAfterUndo()) deferredSave = true;
-        }
         private void UpdateSceneGUIdrawingData() {
             if (sortedObjects != null) {
                 for (int i = 0; i < sortedObjects.Length; i++) {
@@ -780,13 +778,41 @@ namespace GistLevelDesigner {
                     nullPreviewsLastAttemptTime = DateTime.UtcNow;
                     nullPreviewsAttempts = 0;
                     selectionStatus = SelectionStatus.MANAGED;
+                    UndoRedoPerformedSubscribe();
                 }
             }
         }
         private void HierarchyGameObjectDeselected() {
-            deferredSave = true;
+            // Save();
+            DeferredSave();
             selectionActive = false;
             selectionStatus = SelectionStatus.NONE;
+            UndoRedoPerformedUnsubscribe();
+        }
+        private void UndoRedoPerformedSubscribe() {
+            if (undoRedoPerformedSubscribed) return;
+            
+            Undo.undoRedoPerformed += UndoRedoPerformed;
+            undoRedoPerformedSubscribed = true;
+        }
+        private void UndoRedoPerformedUnsubscribe() {
+            if (!undoRedoPerformedSubscribed) return;
+            
+            Undo.undoRedoPerformed -= UndoRedoPerformed;
+            undoRedoPerformedSubscribed = false;
+        }
+        private void UndoRedoPerformed() {
+            if (undoCreatedObjectsOn) {
+                if (sortedObjects == null) return;
+                for (int i = 0; i < sortedObjects.Length; i++) {
+                    if (sortedObjects[i].gameObject == null) {
+                        if (RemoveDisappearedObject(sortedObjects[i])) i--;
+                    }
+                }
+            }
+            
+            UpdateSceneGUIdrawingData();
+            if (CheckAndFixUnexpectedChangesAfterUndo()) DeferredSave();
         }
         private void ShowButton(Rect position) {
             bool lockedNew = GUI.Toggle(position, locked, GUIContent.none, Styles.lockButton);
