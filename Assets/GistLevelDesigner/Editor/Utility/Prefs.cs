@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace GistLevelDesigner {
     public struct Prefs {
-        public const string version = "1.3";
+        public const string version = "1.3.1";
         public const string levelDesignerPackageName = "Gist Level Designer";
         public const string levelDesignerMenuPath = "Window/Twice Better/" + levelDesignerPackageName;
         public const string levelDesignerWindowTitle = "Level Designer";
