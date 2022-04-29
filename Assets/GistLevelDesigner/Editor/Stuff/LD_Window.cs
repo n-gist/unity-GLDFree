@@ -107,10 +107,13 @@ namespace GistLevelDesigner {
                 }
             }
         }
+        private void        CheckForSelectionChange() {
+            if (selection != GetSelectionGameObject()) OnSelectionChange();
+        }
         private void        OnSelectionChange() {
             if (locked) return;
             
-            selection = Selection.gameObjects.Length == 1 ? Selection.gameObjects[0] : null;
+            selection = GetSelectionGameObject();
             if (selection != null) {
                 if (selectionActive) HierarchyGameObjectDeselected();
                 if (selection.activeInHierarchy) HierarchyActiveGameObjectSelected();
@@ -141,8 +144,8 @@ namespace GistLevelDesigner {
                 nullIconsPreviewsLastAttemptTime = currentTime;
             }
         }
-        void OnFocus() {
-            OnSelectionChange();
+        private void OnFocus() {
+            CheckForSelectionChange();
         }
         public  static void ScriptableObjectUpdated(ScriptableObject updated_SO) {
             if (window != null && window.selectionStatus == SelectionStatus.MANAGED) {
@@ -492,7 +495,7 @@ namespace GistLevelDesigner {
             deferredSaveRootPrefabPath = AssetDatabase.GUIDToAssetPath(rootPrefab_GUID);
             deferredSave = true;
         }
-        private string SavingRootPrefabPath(bool deferred) {
+        private        string SavingRootPrefabPath(bool deferred) {
             return deferred ? deferredSaveRootPrefabPath : AssetDatabase.GUIDToAssetPath(rootPrefab_GUID);
         }
         private        void   Save() {
@@ -663,17 +666,20 @@ namespace GistLevelDesigner {
         }
     #endregion
     #region OTHER 
-        public static Main_Set_SO        GetActiveMainSet() {
+        public  static Main_Set_SO        GetActiveMainSet() {
             return window?.levelData?.mainSet;
         }
-        public static string             GetActiveRootPrefabPath() {
+        public  static string             GetActiveRootPrefabPath() {
             return AssetDatabase.GUIDToAssetPath(window.rootPrefab_GUID);
         }
-        public static VisibilitySettings VisibilitySettings() {
+        public  static VisibilitySettings VisibilitySettings() {
             return window.levelData.visibilitySettings;
         }
-        public static OptionsSettings    OptionsSettings() {
+        public  static OptionsSettings    OptionsSettings() {
             return window.levelData.optionsSettings;
+        }
+        private static GameObject         GetSelectionGameObject() {
+            return Selection.gameObjects.Length == 1 ? Selection.gameObjects[0] : null;
         }
         
         private void CheckLoadingPreviews() {
@@ -819,7 +825,7 @@ namespace GistLevelDesigner {
             if (lockedNew != locked) {
                 locked = lockedNew;
                 if (!locked) {
-                    var currentSelection = Selection.gameObjects.Length == 1 ? Selection.gameObjects[0] : null;
+                    var currentSelection = GetSelectionGameObject();
                     if (currentSelection != selection || currentSelection == null) OnSelectionChange();
                 }
             }
