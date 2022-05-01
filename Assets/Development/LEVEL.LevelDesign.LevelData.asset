@@ -20,6 +20,7 @@ MonoBehaviour:
       moveSnap: 1
       rotationSnap: 22.5
       wallsManipulatorsHeight: 1
+      hoverResponsiveHandles: 1
     visibilitySettings:
       movement: 1
       rotation: 1

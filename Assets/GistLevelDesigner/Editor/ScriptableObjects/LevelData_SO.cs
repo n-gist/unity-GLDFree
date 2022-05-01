@@ -47,6 +47,7 @@ namespace GistLevelDesigner {
         SerializedProperty   moveSnap;
         SerializedProperty   rotationSnap;
         SerializedProperty   wallsManipulatorsHeight;
+        SerializedProperty   hoverResponsiveHandles;
         SerializedProperty   visibilitySettings;
         SerializedProperty   movement;
         SerializedProperty   rotation;
@@ -78,6 +79,7 @@ namespace GistLevelDesigner {
             moveSnap                = optionsSettings.FindPropertyRelative(nameof(moveSnap));
             rotationSnap            = optionsSettings.FindPropertyRelative(nameof(rotationSnap));
             wallsManipulatorsHeight = optionsSettings.FindPropertyRelative(nameof(wallsManipulatorsHeight));
+            hoverResponsiveHandles  = optionsSettings.FindPropertyRelative(nameof(hoverResponsiveHandles));
             
             visibilitySettings = levelData.FindPropertyRelative(nameof(visibilitySettings));
             movement           = visibilitySettings.FindPropertyRelative(nameof(movement));
@@ -172,6 +174,12 @@ namespace GistLevelDesigner {
                 wallsManipulatorsHeight.floatValue = EditorGUILayout.FloatField(wallsManipulatorsHeight.floatValue, Styles.settingsOptionsValue);
                 EditorGUILayout.EndHorizontal();
                 guiCalcHeight += 20;
+
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label("Hover responsive handles", Styles.settingsOptionsLabel);
+                hoverResponsiveHandles.boolValue = EditorGUILayout.Toggle(hoverResponsiveHandles.boolValue);
+                EditorGUILayout.EndHorizontal();
+                guiCalcHeight += 20;
             }
             
             // Visibility
@@ -224,7 +232,8 @@ namespace GistLevelDesigner {
         public OptionsSettings    optionsSettings = new OptionsSettings{
             moveSnap = 1f,
             rotationSnap = 22.5f,
-            wallsManipulatorsHeight = 1f
+            wallsManipulatorsHeight = 1f,
+            hoverResponsiveHandles = true
         };
         public VisibilitySettings visibilitySettings = new VisibilitySettings{
             movement = true,

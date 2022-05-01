@@ -340,7 +340,12 @@ namespace GistLevelDesigner {
             if (selectionStatus != SelectionStatus.MANAGED) return;
             
             SortObjects();
-            for (int i = 0; i < sortedObjects.Length; i++) sortedObjects[i].SceneGUI();
+            var objectsLength = sortedObjects.Length;
+            for (int i = 0; i < objectsLength; i++) sortedObjects[i].SceneGUI();
+            
+            if (levelData.optionsSettings.hoverResponsiveHandles && objectsLength > 0 && Event.current.type == EventType.MouseMove) {
+                HandleUtility.Repaint();
+            }
         }
     #endregion
     #region OBJECTS ADD/REMOVE 

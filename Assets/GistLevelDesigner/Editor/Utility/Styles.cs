@@ -17,6 +17,7 @@ namespace GistLevelDesigner {
         public static GUIStyle toggleStylem56;
         public static GUIStyle settingsOptionsLabel;
         public static GUIStyle settingsOptionsValue;
+        
         static Styles() {
             Texture2D emptyTex = new Texture2D(1, 1);
             emptyTex.SetPixels32(new Color32[]{new Color(0, 0, 0, 0)});
@@ -57,7 +58,6 @@ namespace GistLevelDesigner {
             settingsOptionsLabel.fixedWidth = 160;
             
             settingsOptionsValue = new GUIStyle(GUI.skin.textField);
-            settingsOptionsValue.margin = new RectOffset(0, 0, 2, 2);
             settingsOptionsValue.fixedWidth = 50;
         }
         private static GUIStyle ToggleStyleMarginLeft(int marginLeft) {

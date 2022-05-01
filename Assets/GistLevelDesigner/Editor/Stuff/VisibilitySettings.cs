@@ -50,6 +50,7 @@ namespace GistLevelDesigner {
         public float moveSnap;
         public float rotationSnap;
         public float wallsManipulatorsHeight;
+        public bool  hoverResponsiveHandles;
         
         public object Clone() {
             var clone = new OptionsSettings();
